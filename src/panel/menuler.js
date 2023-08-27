@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 
 const Menuler = () => {
   const [menuItems, setMenuItems] = useState([]);
+  const [isLoadingMenu, setIsLoadingMenu] = useState(true);
 
   useEffect(() => {
     async function fetchMenus() {
@@ -27,6 +28,7 @@ const Menuler = () => {
     }
 
     fetchMenus();
+    setIsLoadingMenu(false);
   }, []);
 
   const handleDelete = async (id) => {
@@ -53,7 +55,9 @@ const Menuler = () => {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
       >
-        {menuItems.length === 0 ? (
+        {isLoadingMenu ? (
+          <p className="text-gray-500 text-center">Yükleniyor...</p>
+        ) : menuItems.length === 0 ? (
           <p className="text-center text-red-500 text-xl font-bold mb-4">
             Menü oluşturulmamış.
           </p>

@@ -19,7 +19,7 @@ const Menu = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [user] = useAuthState(auth);
   const [showError, setShowError] = useState(false);
-
+  const [isLoadingMenu, setIsLoadingMenu] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
@@ -40,6 +40,7 @@ const Menu = () => {
       });
 
       setMenuItems(items);
+      setIsLoadingMenu(false);
     }
 
     fetchMenu();
@@ -105,7 +106,9 @@ const Menu = () => {
         <h2 className="text-center text-lg text-gray-900 font-extrabold mb-2">
           Yarının Menüsü
         </h2>
-        {menuItems.length === 0 ? (
+        {isLoadingMenu ? (
+          <p className="text-gray-500 text-center">Yükleniyor...</p>
+        ) : menuItems.length === 0 ? (
           <p className="text-gray-500 text-center">Menü eklenmemiş.</p>
         ) : (
           <motion.ol

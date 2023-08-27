@@ -14,8 +14,6 @@ const Login = () => {
   const isimCek = localStorage.getItem("isim");
   const mailCek = localStorage.getItem("mail");
 
-  console.log(mailCek);
-
   const handleLogin = useCallback(
     (e) => {
       e.preventDefault();
@@ -85,6 +83,14 @@ const Login = () => {
                 </button>
               </div>
             </form>
+            <div className="flex items-center justify-center mt-4">
+              <Link
+                to="sifremi-unuttum"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Şifremi Unuttum
+              </Link>
+            </div>
           </>
         ) : (
           <>
@@ -154,6 +160,7 @@ const Login = () => {
             </div>
           </>
         )}
+
         {error && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
