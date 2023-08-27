@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { query, collection, getDocs } from "firebase/firestore";
+import { query, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
@@ -20,7 +20,7 @@ const Menuler = () => {
         const tarih = data.tarih;
         const katilanlarSayisi = data.katilanlar.length;
 
-        items.push({ tarih, katilanlarSayisi });
+        items.push({ tarih, katilanlarSayisi, id: doc.id });
       });
 
       setMenuItems(items);
@@ -29,6 +29,15 @@ const Menuler = () => {
     fetchMenus();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await deleteDoc(doc(db, "yemekler", id));
+      setMenuItems(menuItems.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error("Hata:", error);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -36,31 +45,43 @@ const Menuler = () => {
       exit={{ opacity: 0 }}
       className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8"
     >
-      <header className="text-3xl font-extrabold text-gray-900 mb-4">
-        Battalgazi MTAL
+      <header className="text-3xl font-extrabold text-center text-gray-900 mb-4">
+        Battalgazi MTAL <br /> Katılım Takip
       </header>
       <div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
       >
-        <motion.ol
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {menuItems.map((item, index) => (
-            <div
-              className="bg-white rounded-lg p-4 mb-4 border border-gray-400  w-full max-w-md"
-              key={index}
-            >
-              <li>
-                <p className="font-extrabold">{item.tarih} Tarihinde,</p>
-                {item.katilanlarSayisi} kişi yemekhaneye katılacak.
-              </li>
-            </div>
-          ))}
-        </motion.ol>
+        {menuItems.length === 0 ? (
+          <p className="text-center text-red-500 text-xl font-bold mb-4">
+            Menü oluşturulmamış.
+          </p>
+        ) : (
+          <motion.ol
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            {menuItems.map((item, index) => (
+              <div
+                className="bg-white rounded-lg p-4 mb-4 border border-gray-400  w-full max-w-md"
+                key={index}
+              >
+                <li className="flex flex-col">
+                  <p className="font-extrabold">{item.tarih} Tarihinde,</p>
+                  {item.katilanlarSayisi} kişi yemekhaneye katılacak.
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className="mt-2 bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-600 transition duration-300"
+                  >
+                    Menüyü Sil
+                  </button>
+                </li>
+              </div>
+            ))}
+          </motion.ol>
+        )}
       </div>
       <Link
         to="/anasayfa"

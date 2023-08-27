@@ -65,7 +65,7 @@ const KatilimGecmisi = () => {
                 </div>
               </>
             ) : (
-              <ol className="flex items-center justify-center">
+              <ol className="flex flex-col items-center justify-center">
                 {gecmis.map((gecmis, sayi) => (
                   <li
                     className="p-3 text-center w-72 lg:w-96 bg-white rounded-md m-5 font-medium"

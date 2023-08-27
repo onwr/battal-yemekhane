@@ -42,14 +42,14 @@ const MenuEkle = () => {
 
       const docRef = await addDoc(collection(db, "yemekler"), menuData);
 
-      setShowSuccess(true); // Başarılı mesajını göster
-      setShowError(false); // Hata mesajını gizle
+      setShowSuccess(true);
+      setShowError(false);
       setTimeout(() => {
-        setShowSuccess(false); // 2 saniye sonra mesajı gizle
+        setShowSuccess(false);
       }, 2000);
     } catch (error) {
-      setShowError(true); // Hata mesajını göster
-      setShowSuccess(false); // Başarılı mesajını gizle
+      setShowError(true);
+      setShowSuccess(false);
     }
   };
 

@@ -10,6 +10,8 @@ const HomePage = () => {
   const [user, isLoading] = useAuthState(auth);
 
   const handleSignOut = useCallback(() => {
+    localStorage.setItem("isim", user.displayName);
+    localStorage.setItem("mail", user.email);
     signOut(auth);
   }, []);
 

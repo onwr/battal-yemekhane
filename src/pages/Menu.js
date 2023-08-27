@@ -105,21 +105,25 @@ const Menu = () => {
         <h2 className="text-center text-lg text-gray-900 font-extrabold mb-2">
           Yarının Menüsü
         </h2>
-        <motion.ol
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="list-disc font-extrabold text-gray-900 list-inside ml-4"
-        >
-          {menuItems.map((item, index) => (
-            <div key={index}>
-              {item.Yemek1 && <li>{item.Yemek1}</li>}
-              {item.Yemek2 && <li>{item.Yemek2}</li>}
-              {item.Yemek3 && <li>{item.Yemek3}</li>}
-              {item.Yemek4 && <li>{item.Yemek4}</li>}
-            </div>
-          ))}
-        </motion.ol>
+        {menuItems.length === 0 ? (
+          <p className="text-gray-500 text-center">Menü eklenmemiş.</p>
+        ) : (
+          <motion.ol
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="list-disc font-extrabold text-gray-900 list-inside ml-4"
+          >
+            {menuItems.map((item, index) => (
+              <div key={index}>
+                {item.Yemek1 && <li>{item.Yemek1}</li>}
+                {item.Yemek2 && <li>{item.Yemek2}</li>}
+                {item.Yemek3 && <li>{item.Yemek3}</li>}
+                {item.Yemek4 && <li>{item.Yemek4}</li>}
+              </div>
+            ))}
+          </motion.ol>
+        )}
       </div>
       <motion.button
         onClick={handleKatilButtonClick}
