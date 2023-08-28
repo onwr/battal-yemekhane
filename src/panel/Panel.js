@@ -24,7 +24,7 @@ const Panel = () => {
     );
   }
 
-  if (user && user.email !== "onur@gmail.com") {
+  if (user && user.uid !== "vcGjx6M1MhVlB7FXQdzhpHYTrxD3") {
     return <Engel />;
   }
 
