@@ -24,7 +24,9 @@ const Panel = () => {
     );
   }
 
-  if (user && user.email !== "onur@gmail.com") {
+  const mailCek = localStorage.getItem("mail");
+
+  if (user && mailCek !== "onur@gmail.com") {
     return <Engel />;
   }
 
