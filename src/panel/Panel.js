@@ -24,7 +24,13 @@ const Panel = () => {
     );
   }
 
+<<<<<<< HEAD
   if (user && user.uid !== "vcGjx6M1MhVlB7FXQdzhpHYTrxD3") {
+=======
+  const mailCek = localStorage.getItem("mail");
+
+  if (mailCek !== "onur@gmail.com") {
+>>>>>>> 6db3680557f7dd3694c50aaa7e096c65d304fe51
     return <Engel />;
   }
 
