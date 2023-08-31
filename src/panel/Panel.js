@@ -25,11 +25,6 @@ const Panel = () => {
     );
   }
 
-
-  if (mailCek !== "onur@gmail.com") {
-    return <Engel />;
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
