@@ -24,7 +24,7 @@ const Panel = () => {
     );
   }
 
-  if(user.email !== "onur@gmail.com")
+  if(user.displayName !== "Onur Deneme")
   {
     return <Engel />
   }
