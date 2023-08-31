@@ -8,7 +8,6 @@ import Engel from "../components/ErisimEngeli";
 
 const Panel = () => {
   const [user, isLoading] = useAuthState(auth);
-  const mailCek = localStorage.getItem("mail");
 
   if (isLoading) {
     return (
@@ -25,7 +24,7 @@ const Panel = () => {
     );
   }
 
-  if(mailCek !== "onur@gmail.com")
+  if(user.email !== "onur@gmail.com")
   {
     return <Engel />
   }
