@@ -24,11 +24,6 @@ const Panel = () => {
     );
   }
 
-  if(user.displayName !== "Onur Deneme")
-  {
-    return <Engel />
-  }
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
