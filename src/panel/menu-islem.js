@@ -1,15 +1,44 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import { collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Engel from "../components/ErisimEngeli";
 
 const MenuEkle = () => {
   const [menuItems, setMenuItems] = useState([{ name: "", id: 1 }]);
-  const [manualDate, setManualDate] = useState(""); // Tarihi yazılı olarak tutmak için state
-  const [showSuccess, setShowSuccess] = useState(false); // Başarı mesajını göstermek için state
-  const [showError, setShowError] = useState(false); // Hata mesajını göstermek için state
+  const [manualDate, setManualDate] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [user] = useAuthState(auth);
+  const userId = user.uid;
+  const [durum, setDurum] = useState("");
+
+  useEffect(() => {
+    const veriCek = async () => {
+      try {
+        const ref = collection(db, "yetkiler");
+        const yetkiliQuery = query(ref, where("userId", "==", userId));
+        const querySnap = await getDocs(yetkiliQuery);
+
+        if (!querySnap.empty) {
+          const yetkiliDoc = querySnap.docs[0];
+          const yetkiliData = yetkiliDoc.data();
+          const durumCek = yetkiliData.durum;
+          setDurum(durumCek);
+        }
+      } catch {
+        console.log("hata");
+      }
+    };
+    veriCek();
+  });
+
+  if (durum != "Yetkili") {
+    return <Engel />;
+  }
 
   const handleAddItem = () => {
     setMenuItems((prevItems) => [

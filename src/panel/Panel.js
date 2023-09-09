@@ -1,13 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Footer from "../components/Footer";
 import Engel from "../components/ErisimEngeli";
+import { collection, getDocs, query, where } from "firebase/firestore";
 
 const Panel = () => {
   const [user, isLoading] = useAuthState(auth);
+  const [durum, setDurum] = useState("");
+  const userId = user.uid;
+
+  useEffect(() => {
+    const veriCek = async () => {
+      try {
+        const ref = collection(db, "yetkiler");
+        const yetkiliQuery = query(ref, where("userId", "==", userId));
+        const querySnap = await getDocs(yetkiliQuery);
+
+        if (!querySnap.empty) {
+          const yetkiliDoc = querySnap.docs[0];
+          const yetkiliData = yetkiliDoc.data();
+          const yetkiVeri = yetkiliData.durum;
+          setDurum(yetkiVeri);
+        }
+      } catch {
+        console.log("hata");
+      }
+    };
+    veriCek();
+  });
+
+  if (durum != "Yetkili") {
+    return <Engel />;
+  }
 
   if (isLoading) {
     return (
@@ -22,16 +49,6 @@ const Panel = () => {
         </div>
       </div>
     );
-  }
-
-<<<<<<< HEAD
-  if (user && user.uid !== "vcGjx6M1MhVlB7FXQdzhpHYTrxD3") {
-=======
-  const mailCek = localStorage.getItem("mail");
-
-  if (mailCek !== "onur@gmail.com") {
->>>>>>> 6db3680557f7dd3694c50aaa7e096c65d304fe51
-    return <Engel />;
   }
 
   return (

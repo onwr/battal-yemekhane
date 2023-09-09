@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { auth, db } from "../firebase";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Engel from "../components/ErisimEngeli";
 
 const PriceEdit = () => {
   const [ogrenciUcreti, setOgrenciUcreti] = useState("");
@@ -14,6 +23,33 @@ const PriceEdit = () => {
   const [updateOgrenci, setUpdateOgrenci] = useState(false);
   const [updateOgretmen, setUpdateOgretmen] = useState(false);
   const [updateMisafir, setUpdateMisafir] = useState(false);
+  const [user] = useAuthState(auth);
+  const userId = user.uid;
+  const [durum, setDurum] = useState("");
+
+  useEffect(() => {
+    const veriCek = async () => {
+      try {
+        const ref = collection(db, "yetkiler");
+        const yetkiliQuery = query(ref, where("userId", "==", userId));
+        const querySnap = await getDocs(yetkiliQuery);
+
+        if (!querySnap.empty) {
+          const yetkiliDoc = querySnap.docs[0];
+          const yetkiliData = yetkiliDoc.data();
+          const durumCek = yetkiliData.durum;
+          setDurum(durumCek);
+        }
+      } catch {
+        console.log("hata");
+      }
+    };
+    veriCek();
+  });
+
+  if (durum != "Yetkili") {
+    return <Engel />;
+  }
 
   const handlePriceSubmit = async () => {
     try {

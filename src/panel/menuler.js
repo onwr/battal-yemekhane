@@ -1,13 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { query, collection, getDocs, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../firebase";
+import {
+  query,
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  where,
+} from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Engel from "../components/ErisimEngeli";
 
 const Menuler = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
+  const [user] = useAuthState(auth);
+  const userId = user.uid;
+  const [durum, setDurum] = useState("");
+
+  useEffect(() => {
+    const veriCek = async () => {
+      try {
+        const ref = collection(db, "yetkiler");
+        const yetkiliQuery = query(ref, where("userId", "==", userId));
+        const querySnap = await getDocs(yetkiliQuery);
+
+        if (!querySnap.empty) {
+          const yetkiliDoc = querySnap.docs[0];
+          const yetkiliData = yetkiliDoc.data();
+          const durumCek = yetkiliData.durum;
+          setDurum(durumCek);
+        }
+      } catch {
+        console.log("hata");
+      }
+    };
+    veriCek();
+  });
 
   useEffect(() => {
     async function fetchMenus() {
@@ -30,6 +62,10 @@ const Menuler = () => {
     fetchMenus();
     setIsLoadingMenu(false);
   }, []);
+
+  if (durum != "Yetkili") {
+    return <Engel />;
+  }
 
   const handleDelete = async (id) => {
     try {
