@@ -23,16 +23,6 @@ const PriceEdit = () => {
   const [updateOgrenci, setUpdateOgrenci] = useState(false);
   const [updateOgretmen, setUpdateOgretmen] = useState(false);
   const [updateMisafir, setUpdateMisafir] = useState(false);
-  const [user] = useAuthState(auth);
-  const userId = user.uid;
-  const [durum, setDurum] = useState("");
-
-  useEffect(() => {
-    const veriCek = async () => {
-      try {
-        const ref = collection(db, "yetkiler");
-        const yetkiliQuery = query(ref, where("userId", "==", userId));
-        const querySnap = await getDocs(yetkiliQuery);
 
 
   const handlePriceSubmit = async () => {
