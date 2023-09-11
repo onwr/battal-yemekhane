@@ -43,9 +43,7 @@ const Menuler = () => {
     setIsLoadingMenu(false);
   }, []);
 
-  if (durum != "Yetkili") {
-    return <Engel />;
-  }
+  
 
   const handleDelete = async (id) => {
     try {
