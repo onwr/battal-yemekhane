@@ -12,7 +12,7 @@ import { auth, db } from "../firebase";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
-import Engel from "../components/ErisimEngeli";
+
 
 const PriceEdit = () => {
   const [ogrenciUcreti, setOgrenciUcreti] = useState("");
