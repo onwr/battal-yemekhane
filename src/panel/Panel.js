@@ -8,33 +8,8 @@ import Engel from "../components/ErisimEngeli";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
 const Panel = () => {
-  const [user, isLoading] = useAuthState(auth);
-  const [durum, setDurum] = useState("");
-  const userId = user.uid;
+  const [user, isLoading] = useAuthState(auth)
 
-  useEffect(() => {
-    const veriCek = async () => {
-      try {
-        const ref = collection(db, "yetkiler");
-        const yetkiliQuery = query(ref, where("userId", "==", userId));
-        const querySnap = await getDocs(yetkiliQuery);
-
-        if (!querySnap.empty) {
-          const yetkiliDoc = querySnap.docs[0];
-          const yetkiliData = yetkiliDoc.data();
-          const yetkiVeri = yetkiliData.durum;
-          setDurum(yetkiVeri);
-        }
-      } catch {
-        console.log("hata");
-      }
-    };
-    veriCek();
-  });
-
-  if (durum != "Yetkili") {
-    return <Engel />;
-  }
 
   if (isLoading) {
     return (
