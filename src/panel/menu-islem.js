@@ -16,30 +16,6 @@ const MenuEkle = () => {
   const userId = user.uid;
   const [durum, setDurum] = useState("");
 
-  useEffect(() => {
-    const veriCek = async () => {
-      try {
-        const ref = collection(db, "yetkiler");
-        const yetkiliQuery = query(ref, where("userId", "==", userId));
-        const querySnap = await getDocs(yetkiliQuery);
-
-        if (!querySnap.empty) {
-          const yetkiliDoc = querySnap.docs[0];
-          const yetkiliData = yetkiliDoc.data();
-          const durumCek = yetkiliData.durum;
-          setDurum(durumCek);
-        }
-      } catch {
-        console.log("hata");
-      }
-    };
-    veriCek();
-  });
-
-  if (durum != "Yetkili") {
-    return <Engel />;
-  }
-
   const handleAddItem = () => {
     setMenuItems((prevItems) => [
       ...prevItems,
