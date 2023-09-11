@@ -19,7 +19,7 @@ const Menuler = () => {
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
   const [user] = useAuthState(auth);
   const userId = user.uid;
-  const [durum, setDurum] = useState("");
+
 
   useEffect(() => {
     async function fetchMenus() {
