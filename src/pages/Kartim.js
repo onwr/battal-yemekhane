@@ -8,7 +8,6 @@ import {
   getDocs,
   doc,
   updateDoc,
-  serverTimestamp,
 } from "firebase/firestore";
 import Modal from "react-modal";
 import { motion } from "framer-motion";
@@ -35,6 +34,8 @@ const Kartim = () => {
   const [kartNo, setKartNo] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [kartExistsForAnotherUser, setKartExistsForAnotherUser] =
+    useState(false);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -73,12 +74,38 @@ const Kartim = () => {
     } else {
       const kartDoc = kartSorguSnapshot.docs[0];
       const kartId = kartDoc.id;
-      await updateDoc(doc(db, "kartlar", kartId), {
-        userId: userId,
+      const existingUserId = kartDoc.data().userId;
+
+      if (existingUserId && existingUserId !== userId) {
+        setKartExistsForAnotherUser(true);
+        setTimeout(() => {
+          setKartExistsForAnotherUser(false);
+        }, 2000);
+      } else {
+        await updateDoc(doc(db, "kartlar", kartId), {
+          userId: userId,
+        });
+
+        closeModal();
+
+        window.location.reload();
+      }
+    }
+  };
+
+  const handleKartSil = async (no) => {
+    const kartlarRef = collection(db, "kartlar");
+    const kartQ = query(kartlarRef, where("kartNo", "==", no));
+    const kartDocs = await getDocs(kartQ);
+
+    if (kartDocs.empty) {
+      alert("Kart bulunamadı.");
+    } else {
+      const kartDoc = kartDocs.docs[0];
+      const id = kartDoc.id;
+      await updateDoc(doc(db, "kartlar", id), {
+        userId: null,
       });
-
-      closeModal();
-
       window.location.reload();
     }
   };
@@ -89,7 +116,7 @@ const Kartim = () => {
         <div>
           {kart ? (
             <div className="flex flex-col gap-2">
-              <div className="bg-indigo-50 rounded-md shadow-md w-96 h-44 border p-2">
+              <div className="bg-indigo-50 rounded-md shadow-md w-96 h-auto border p-2">
                 <div className="text-gray-800 font-extrabold">
                   <p className="text-xl mb-1">Kart Bilgileri:</p>
                   <p className="text-xl">{kart.kalanGun} Gün Kaldı!</p>
@@ -113,11 +140,23 @@ const Kartim = () => {
                       key={index}
                       className="text-gray-800 p-3 border rounded-md"
                     >
-                      <p className="text-xl font-extrabold">{gecmis}</p>
+                      {kart.gecmis.length == 1 ? (
+                        <p className="text-xl font-extrabold">
+                          İşlem bulunamadı.
+                        </p>
+                      ) : (
+                        <p className="text-xl font-extrabold">{gecmis}</p>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
+              <button
+                className="max-w-md w-full text-gray-800 font-extrabold bg-red-100 p-4 border rounded-md hover:bg-red-300"
+                onClick={() => handleKartSil(kart.kartNo)}
+              >
+                Kartı Sil
+              </button>
             </div>
           ) : (
             <div className="font-extrabold text-gray-800 text-2xl">
@@ -162,6 +201,11 @@ const Kartim = () => {
             >
               Kart Ekle
             </button>
+            {kartExistsForAnotherUser && (
+              <p className="mt-2 text-red-600 text-sm">
+                Bu kart başka bir kullanıcı tarafından alınmıştır.
+              </p>
+            )}
           </div>
         </motion.div>
       </Modal>
