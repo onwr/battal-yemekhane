@@ -11,15 +11,11 @@ import { auth, db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
 import Engel from "../components/ErisimEngeli";
 
 const Menuler = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
-  const [user] = useAuthState(auth);
-  const userId = user.uid;
-
 
   useEffect(() => {
     async function fetchMenus() {
@@ -42,8 +38,6 @@ const Menuler = () => {
     fetchMenus();
     setIsLoadingMenu(false);
   }, []);
-
-  
 
   const handleDelete = async (id) => {
     try {

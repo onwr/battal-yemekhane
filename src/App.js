@@ -13,6 +13,7 @@ import MenuDuzenle from "./panel/menu-islem";
 import UcretDuzenle from "./panel/ucret-islem";
 import Bulunamadi from "./components/Hata";
 import Menuler from "./panel/menuler";
+import Kartim from "./pages/Kartim";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         </Route>
         <Route path="/" element={<MainLayout />}>
           <Route path="/anasayfa" element={<Anasayfa />} />
+          <Route path="/kartim" element={<Kartim />} />
           <Route path="/gecmis" element={<Gecmis />} />
           <Route path="/gunun-menusu" element={<Menu />} />
           <Route path="/yonetici/panel" element={<Panel />} />
