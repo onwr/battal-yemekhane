@@ -209,7 +209,11 @@ const Kartim = () => {
         >
           <div className="flex flex-col font-extrabold text-gray-800">
             {gelenKartNo == null ? (
-              <QrScanner onScan={handleQrScan} />
+              <QrScanner
+                onScan={handleQrScan}
+                delay={300}
+                facingMode="environment"
+              />
             ) : (
               <>
                 <input
