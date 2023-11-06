@@ -32,6 +32,7 @@ const Kartim = () => {
   const [user] = useAuthState(auth);
   const userId = user.uid;
   const [kart, setKart] = useState(null);
+  const [kameraModu, setKameraModu] = useState("");
   const [kartSifre, setKartSifre] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sifreHata, setSifreHata] = useState(false);
@@ -209,11 +210,27 @@ const Kartim = () => {
         >
           <div className="flex flex-col font-extrabold text-gray-800">
             {gelenKartNo == null ? (
-              <QrScanner
-                onScan={handleQrScan}
-                delay={300}
-                facingMode="environment"
-              />
+              <>
+                <QrScanner
+                  onScan={handleQrScan}
+                  delay={300}
+                  constraints={{
+                    video: { facingMode: { kameraModu } },
+                  }}
+                />
+                <button
+                  className="bg-indigo-100 p-3 mt-2 rounded-md w-full"
+                  onClick={() => setKameraModu("user")}
+                >
+                  Ön Kamera
+                </button>
+                <button
+                  className="bg-indigo-100 p-3 mt-2 rounded-md w-full"
+                  onClick={() => setKameraModu("environment")}
+                >
+                  Arka Kamera
+                </button>
+              </>
             ) : (
               <>
                 <input
