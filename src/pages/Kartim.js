@@ -11,6 +11,7 @@ import {
 } from "firebase/firestore";
 import Modal from "react-modal";
 import { motion } from "framer-motion";
+import QrScanner from "react-qr-scanner"; // QR kodu okumak için gerekli import
 
 Modal.setAppElement("#root");
 
@@ -31,11 +32,13 @@ const Kartim = () => {
   const [user] = useAuthState(auth);
   const userId = user.uid;
   const [kart, setKart] = useState(null);
-  const [kartNo, setKartNo] = useState("");
+  const [kartSifre, setKartSifre] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sifreHata, setSifreHata] = useState(false);
   const [loading, setLoading] = useState(false);
   const [kartExistsForAnotherUser, setKartExistsForAnotherUser] =
     useState(false);
+  const [gelenKartNo, setGelenKartNo] = useState(null);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -65,8 +68,13 @@ const Kartim = () => {
   }, [userId]);
 
   const handleKartEkle = async () => {
+    if (!gelenKartNo) {
+      alert("Lütfen önce bir QR kod okutun.");
+      return;
+    }
+
     const kartlarRef = collection(db, "kartlar");
-    const kartSorgu = query(kartlarRef, where("kartNo", "==", kartNo));
+    const kartSorgu = query(kartlarRef, where("kartNo", "==", gelenKartNo));
     const kartSorguSnapshot = await getDocs(kartSorgu);
 
     if (kartSorguSnapshot.empty) {
@@ -75,20 +83,26 @@ const Kartim = () => {
       const kartDoc = kartSorguSnapshot.docs[0];
       const kartId = kartDoc.id;
       const existingUserId = kartDoc.data().userId;
+      const sifre = kartDoc.data().sifre;
 
       if (existingUserId && existingUserId !== userId) {
         setKartExistsForAnotherUser(true);
         setTimeout(() => {
           setKartExistsForAnotherUser(false);
         }, 2000);
-      } else {
+      } else if (kartSifre == sifre) {
         await updateDoc(doc(db, "kartlar", kartId), {
           userId: userId,
         });
 
+        setGelenKartNo("");
         closeModal();
-
         window.location.reload();
+      } else {
+        setSifreHata(true);
+        setTimeout(() => {
+          setSifreHata(false);
+        }, 2000);
       }
     }
   };
@@ -110,8 +124,14 @@ const Kartim = () => {
     }
   };
 
+  const handleQrScan = (result) => {
+    if (result) {
+      setGelenKartNo(result.text);
+    }
+  };
+
   return (
-    <div className="bg-gray-50 flex flex-col min-h-screen justify-center items-center">
+    <div className="bg-white flex flex-col min-h-screen justify-center items-center">
       <div className="max-w-md mx-auto p-4">
         <div>
           {kart ? (
@@ -188,19 +208,30 @@ const Kartim = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex flex-col font-extrabold text-gray-800">
-            <input
-              type="text"
-              value={kartNo}
-              onChange={(e) => setKartNo(e.target.value)}
-              className="bg-white border w-full rounded-md p-3"
-              placeholder="Kart Numarası"
-            />
-            <button
-              className="max-w-md w-full mt-3 bg-indigo-100 p-4 border rounded-md hover:bg-indigo-300"
-              onClick={handleKartEkle}
-            >
-              Kart Ekle
-            </button>
+            {gelenKartNo == null ? (
+              <QrScanner onScan={handleQrScan} />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  className="p-3 rounded-md w-full bg-indigo-100 border"
+                  value={kartSifre}
+                  onChange={(e) => setKartSifre(e.currentTarget.value)}
+                  placeholder="Kartın Şifresi"
+                />
+                <button
+                  className="max-w-md w-full mt-3 bg-indigo-100 p-4 border rounded-md hover:bg-indigo-300"
+                  onClick={handleKartEkle}
+                >
+                  Kart Ekle
+                </button>
+                {sifreHata && (
+                  <p className="text-xl font-semibold text-red-600 mt-2">
+                    Girilen şifre hatalı.
+                  </p>
+                )}
+              </>
+            )}
             {kartExistsForAnotherUser && (
               <p className="mt-2 text-red-600 text-sm">
                 Bu kart başka bir kullanıcı tarafından alınmıştır.
