@@ -214,22 +214,11 @@ const Kartim = () => {
                 <QrScanner
                   onScan={handleQrScan}
                   delay={300}
+                  className="rounded-md"
                   constraints={{
-                    video: { facingMode: { kameraModu } },
+                    video: { facingMode: "environment" },
                   }}
                 />
-                <button
-                  className="bg-indigo-100 p-3 mt-2 rounded-md w-full"
-                  onClick={() => setKameraModu("user")}
-                >
-                  Ön Kamera
-                </button>
-                <button
-                  className="bg-indigo-100 p-3 mt-2 rounded-md w-full"
-                  onClick={() => setKameraModu("environment")}
-                >
-                  Arka Kamera
-                </button>
               </>
             ) : (
               <>
