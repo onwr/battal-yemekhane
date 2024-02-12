@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   query,
   collection,
@@ -8,16 +8,14 @@ import {
   arrayUnion,
   doc,
 } from "firebase/firestore";
-import { db, auth } from "../firebase";
+import { db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [user] = useAuthState(auth);
   const [showError, setShowError] = useState(false);
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -55,35 +53,36 @@ const Menu = () => {
   };
 
   const handleKatilButtonClick = async () => {
-    const nextDay = new Date(selectedDate);
-    nextDay.setDate(nextDay.getDate() + 1);
-    try {
-      const q = query(
-        collection(db, "yemekler"),
-        where("tarih", "==", formatDate(nextDay))
-      );
+    const isAddedToList = localStorage.getItem("isAddedToList");
 
-      const querySnapshot = await getDocs(q);
+    if (isAddedToList) {
+      setShowError(true);
+    } else {
+      const nextDay = new Date(selectedDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      try {
+        const q = query(
+          collection(db, "yemekler"),
+          where("tarih", "==", formatDate(nextDay))
+        );
 
-      querySnapshot.forEach(async (doc2) => {
-        const docId = doc2.id;
-        const docData = doc2.data();
+        const querySnapshot = await getDocs(q);
 
-        if (docData.katilanlar.includes(user?.email)) {
-          setShowError(true);
-        } else {
+        querySnapshot.forEach(async (doc2) => {
+          const docId = doc2.id;
           const docRef = doc(db, "yemekler", docId);
           await updateDoc(docRef, {
-            katilanlar: arrayUnion(user?.email),
+            katilanlar: arrayUnion("example@example.com"),
           });
           setShowSuccess(true);
           setTimeout(() => {
             setShowSuccess(false);
+            localStorage.setItem("isAddedToList", "true");
           }, 2000);
-        }
-      });
-    } catch (error) {
-      console.error("Hata:", error);
+        });
+      } catch (error) {
+        console.error("Hata:", error);
+      }
     }
   };
 
