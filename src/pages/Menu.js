@@ -12,6 +12,7 @@ import { db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import { Link } from "react-router-dom";
+import logo from "../images/siluet.png";
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -91,24 +92,24 @@ const Menu = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-8"
+      className="min-h-screen flex flex-col items-center"
     >
-      <header className="text-3xl font-extrabold text-gray-900 mb-4">
-        Battalgazi MTAL
+      <header className="text-3xl font-extrabold text-gray-900 mt-40">
+        <img src={logo} className="w-48 md:w-60" />
       </header>
       <div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="bg-white rounded-lg  p-4 mb-4 border border-gray-400  w-full max-w-md"
+        className="md:bg-white rounded-sm p-4 mb-4 md:border md:border-gray-400 bg-gray-200 w-full max-w-sm"
       >
         <h2 className="text-center text-lg text-gray-900 font-extrabold mb-2">
-          Yarının Menüsü
+          YARININ MENÜSÜ
         </h2>
         {isLoadingMenu ? (
           <p className="text-gray-500 text-center">Yükleniyor...</p>
         ) : menuItems.length === 0 ? (
-          <p className="text-gray-500 text-center">Menü eklenmemiş.</p>
+          <p className="text-gray-500 text-center">MENÜ EKLENMEMİŞ.</p>
         ) : (
           <motion.ol
             initial={{ opacity: 0 }}
@@ -130,21 +131,12 @@ const Menu = () => {
       <motion.button
         onClick={handleKatilButtonClick}
         whileHover={{ scale: 1.05 }}
+        disabled={menuItems.length === 0}
         whileTap={{ scale: 0.95 }}
-        className="w-72 lg:w-96 flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="w-80 lg:w-96 flex items-center disabled:opacity-0 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
-        Beni listeye ekle
+        BENİ LİSTEYE EKLE
       </motion.button>
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Link
-          to="/anasayfa"
-          whilehover={{ scale: 1.05 }}
-          whiletap={{ scale: 0.95 }}
-          className="mt-3 w-72 lg:w-96 flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Anasayfaya Dön
-        </Link>
-      </motion.div>
       {showSuccess && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
