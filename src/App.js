@@ -1,13 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Menu from "./pages/Menu";
-import Ucretler from "./pages/Ucretler";
+import DLayout from "./layout/DuyuruLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Menu />} />
-        <Route path="/ucretler" element={<Ucretler />} />
+        <Route path="/" element={<DLayout />}>
+          <Route path="/" element={<Menu />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

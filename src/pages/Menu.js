@@ -7,18 +7,20 @@ import {
   updateDoc,
   arrayUnion,
   doc,
+  getDoc,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
-import { Link } from "react-router-dom";
 import logo from "../images/siluet.png";
 
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [fiyat, setFiyat] = useState({});
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
@@ -45,6 +47,27 @@ const Menu = () => {
     fetchMenu();
   }, [selectedDate]);
 
+  useEffect(() => {
+    const veriCek = async () => {
+      try {
+        const docRef = doc(db, "fiyatlar", "W8E5XtdTNTZ8c6HRA2XV");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setFiyat(docSnap.data());
+        } else {
+          console.log("Belirtilen belge bulunamadı.");
+        }
+
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Veri çekme hatası:", error);
+        setIsLoading(false);
+      }
+    };
+
+    veriCek();
+  }, []);
   const formatDate = (date) => {
     return date.toLocaleDateString("tr-TR", {
       day: "numeric",
@@ -103,13 +126,13 @@ const Menu = () => {
         exit={{ opacity: 0, y: -20 }}
         className="md:bg-white rounded-sm p-4 mb-4 md:border md:border-gray-400 bg-gray-200 w-full max-w-sm"
       >
-        <h2 className="text-center text-lg text-gray-900 font-extrabold mb-2">
+        <h2 className="ml-4 text-lg text-gray-900 font-extrabold mb-2">
           YARININ MENÜSÜ
         </h2>
         {isLoadingMenu ? (
-          <p className="text-gray-500 text-center">Yükleniyor...</p>
+          <p className="text-gray-500 ml-4">Yükleniyor...</p>
         ) : menuItems.length === 0 ? (
-          <p className="text-gray-500 text-center">MENÜ EKLENMEMİŞ.</p>
+          <p className="text-gray-500 ml-4">MENÜ EKLENMEMİŞ.</p>
         ) : (
           <motion.ol
             initial={{ opacity: 0 }}
@@ -137,6 +160,26 @@ const Menu = () => {
       >
         BENİ LİSTEYE EKLE
       </motion.button>
+      <div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="md:bg-white rounded-sm p-4 mb-4 md:border md:border-gray-400 bg-gray-200 w-full max-w-sm"
+      >
+        <h2 className="ml-4 text-lg text-gray-900 font-extrabold mb-2">
+          ÜCRETLER
+        </h2>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="font-extrabold text-gray-900 ml-4"
+        >
+          {fiyat.ogrenci && <li>ÖĞRENCİ: {fiyat.ogrenci} TL</li>}
+          {fiyat.ogretmen && <li>ÖĞRETMEN: {fiyat.ogretmen} TL</li>}
+          {fiyat.misafir && <li>MİSAFİR: {fiyat.misafir} TL</li>}
+        </motion.div>
+      </div>
       {showSuccess && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
