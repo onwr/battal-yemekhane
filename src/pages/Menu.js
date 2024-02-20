@@ -20,8 +20,19 @@ const Menu = () => {
   const [showError, setShowError] = useState(false);
   const [fiyat, setFiyat] = useState({});
   const [isLoadingMenu, setIsLoadingMenu] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [ipAddress, setIpAddress] = useState("");
+
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => response.json())
+      .then((data) => {
+        setIpAddress(data.ip);
+      })
+      .catch((error) => {
+        console.error("IP alınamadı:", error);
+      });
+  }, []);
 
   useEffect(() => {
     async function fetchMenu() {
@@ -58,11 +69,8 @@ const Menu = () => {
         } else {
           console.log("Belirtilen belge bulunamadı.");
         }
-
-        setIsLoading(false);
       } catch (error) {
         console.error("Veri çekme hatası:", error);
-        setIsLoading(false);
       }
     };
 
@@ -117,8 +125,8 @@ const Menu = () => {
       exit={{ opacity: 0 }}
       className="min-h-screen flex flex-col items-center"
     >
-      <header className="text-3xl font-extrabold text-gray-900 mt-40">
-        <img src={logo} className="w-48 md:w-60" />
+      <header className="text-3xl font-extrabold text-gray-900">
+        <img src={logo} className="w-32 md:w-60" />
       </header>
       <div
         initial={{ opacity: 0, y: -20 }}
@@ -156,30 +164,10 @@ const Menu = () => {
         whileHover={{ scale: 1.05 }}
         disabled={menuItems.length === 0}
         whileTap={{ scale: 0.95 }}
-        className="w-80 lg:w-96 flex items-center disabled:opacity-0 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="w-80 lg:w-96 flex mb-2 items-center disabled:opacity-0 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
         BENİ LİSTEYE EKLE
       </motion.button>
-      <div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="md:bg-white rounded-sm p-4 mb-4 md:border md:border-gray-400 bg-gray-200 w-full max-w-sm"
-      >
-        <h2 className="ml-4 text-lg text-gray-900 font-extrabold mb-2">
-          ÜCRETLER
-        </h2>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="font-extrabold text-gray-900 ml-4"
-        >
-          {fiyat.ogrenci && <li>ÖĞRENCİ: {fiyat.ogrenci} TL</li>}
-          {fiyat.ogretmen && <li>ÖĞRETMEN: {fiyat.ogretmen} TL</li>}
-          {fiyat.misafir && <li>MİSAFİR: {fiyat.misafir} TL</li>}
-        </motion.div>
-      </div>
       {showSuccess && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -200,6 +188,29 @@ const Menu = () => {
           Zaten listede adınız var.
         </motion.div>
       )}
+      <div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="md:bg-white rounded-sm p-4 mb-4 md:border md:border-gray-400 bg-gray-200 w-full max-w-sm"
+      >
+        <h2 className="ml-4 text-lg text-gray-900 font-extrabold mb-2">
+          ÜCRETLER
+        </h2>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="font-extrabold text-gray-900 ml-4"
+        >
+          {fiyat.ogrenci && <li>ÖĞRENCİ: {fiyat.ogrenci} TL</li>}
+          {fiyat.ogretmen && <li>ÖĞRETMEN: {fiyat.ogretmen} TL</li>}
+          {fiyat.misafir && <li>MİSAFİR: {fiyat.misafir} TL</li>}
+        </motion.div>
+      </div>
+      <p className="p-1 rounded shadow-xl border bg-gradient-to-l from-gray-600 via-gray-700 to-gray-800 text-white text-lg w-80 lg:w-96 text-center font-semibold">
+        {ipAddress}
+      </p>
       <Footer />
     </motion.div>
   );
