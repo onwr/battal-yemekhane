@@ -84,37 +84,49 @@ const Menu = () => {
     });
   };
 
-  const handleKatilButtonClick = async () => {
-    const isAddedToList = localStorage.getItem("isAddedToList");
+  const handleKontrol = async () => {
+    const yeniGun = new Date(selectedDate);
+    yeniGun.setDate(yeniGun.getDate() + 1);
 
-    if (isAddedToList) {
-      setShowError(true);
-    } else {
-      const nextDay = new Date(selectedDate);
-      nextDay.setDate(nextDay.getDate() + 1);
-      try {
-        const q = query(
-          collection(db, "yemekler"),
-          where("tarih", "==", formatDate(nextDay))
-        );
+    try {
+      const yemekQ = query(
+        collection(db, "yemekler"),
+        where("tarih", "==", formatDate(yeniGun))
+      );
 
-        const querySnapshot = await getDocs(q);
-
-        querySnapshot.forEach(async (doc2) => {
-          const docId = doc2.id;
-          const docRef = doc(db, "yemekler", docId);
-          await updateDoc(docRef, {
-            katilanlar: arrayUnion("example@example.com"),
-          });
-          setShowSuccess(true);
-          setTimeout(() => {
-            setShowSuccess(false);
-            localStorage.setItem("isAddedToList", "true");
-          }, 2000);
-        });
-      } catch (error) {
-        console.error("Hata:", error);
+      const yemekSnap = await getDocs(yemekQ);
+      const data = yemekSnap.docs[0].data().katilanlar;
+      if (data.includes(ipAddress)) {
+        setShowError(true);
+      } else {
+        handleKatilButtonClick();
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleKatilButtonClick = async () => {
+    const nextDay = new Date(selectedDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    try {
+      const q = query(
+        collection(db, "yemekler"),
+        where("tarih", "==", formatDate(nextDay))
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach(async (doc2) => {
+        const docId = doc2.id;
+        const docRef = doc(db, "yemekler", docId);
+        await updateDoc(docRef, {
+          katilanlar: arrayUnion(ipAddress),
+        });
+        setShowSuccess(true);
+      });
+    } catch (error) {
+      console.error("Hata:", error);
     }
   };
 
@@ -160,9 +172,9 @@ const Menu = () => {
         )}
       </div>
       <motion.button
-        onClick={handleKatilButtonClick}
+        onClick={handleKontrol}
         whileHover={{ scale: 1.05 }}
-        disabled={menuItems.length === 0}
+        disabled={menuItems.length == 0}
         whileTap={{ scale: 0.95 }}
         className="w-80 lg:w-96 flex mb-2 items-center disabled:opacity-0 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
       >
